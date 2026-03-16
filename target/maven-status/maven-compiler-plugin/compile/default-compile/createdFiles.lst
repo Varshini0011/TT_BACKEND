@@ -1,0 +1,13 @@
+com\example\BE\UserController.class
+com\example\BE\UserRepository.class
+com\example\BE\ActivityLogRepository.class
+com\example\BE\AIController.class
+com\example\BE\Complaint.class
+com\example\BE\Notification.class
+com\example\BE\Users.class
+com\example\BE\ActivityLog.class
+com\example\BE\NotificationRepository.class
+com\example\BE\NotificationController.class
+com\example\BE\ComplaintRepository.class
+com\example\BE\BeApplication.class
+com\example\BE\ComplaintController.class
