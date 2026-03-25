@@ -17,6 +17,7 @@ public class Complaint {
     private String issueType;
     private String description;
     private String status;
+    private Integer priority = 2;
     private Long assignedWorker;
     private String assignedWorkerName;
     private String imageUrl;
@@ -75,4 +76,7 @@ public class Complaint {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public Integer getPriority() { return priority; }
+public void setPriority(Integer priority) { this.priority = priority; }
 }

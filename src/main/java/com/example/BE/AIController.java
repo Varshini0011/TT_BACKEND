@@ -12,16 +12,16 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class AIController {
 
-    @Value("${huggingface.api.key:NOT_SET}")
-    private String hfApiKey;
+    @Value("${mistral.api.key:NOT_SET}")
+    private String mistralApiKey;
 
     @PostConstruct
     public void checkKey() {
-        if ("NOT_SET".equals(hfApiKey) || hfApiKey.isBlank()) {
-            System.out.println("=== HF KEY: NOT SET ===");
+        if ("NOT_SET".equals(mistralApiKey) || mistralApiKey.isBlank()) {
+            System.out.println("=== MISTRAL KEY: NOT SET ===");
         } else {
-            System.out.println("=== HF KEY: LOADED OK (" +
-                    hfApiKey.substring(0, 8) + "...) ===");
+            System.out.println("=== MISTRAL KEY: LOADED OK (" +
+                    mistralApiKey.substring(0, 8) + "...) ===");
         }
     }
 
@@ -34,8 +34,8 @@ public class AIController {
         result.put("description", "");
         result.put("aiError", "");
 
-        if ("NOT_SET".equals(hfApiKey) || hfApiKey.isBlank()) {
-            result.put("aiError", "HuggingFace API key not configured.");
+        if ("NOT_SET".equals(mistralApiKey) || mistralApiKey.isBlank()) {
+            result.put("aiError", "Mistral API key not configured.");
             return result;
         }
 
@@ -51,15 +51,15 @@ public class AIController {
             String mimeType = file.getContentType();
             String dataUrl = "data:" + mimeType + ";base64," + base64;
 
-            String url = "https://router.huggingface.co/v1/chat/completions";
-            // Build message content with image + text
+            String url = "https://api.mistral.ai/v1/chat/completions";
+
             Map<String, Object> imageUrlMap = new HashMap<>();
             imageUrlMap.put("url", dataUrl);
-            
+
             Map<String, Object> imageContent = new HashMap<>();
             imageContent.put("type", "image_url");
             imageContent.put("image_url", imageUrlMap);
-            System.out.println("Debugging statement1: Image content created.");
+
             Map<String, Object> textContent = new HashMap<>();
             textContent.put("type", "text");
             textContent.put("text",
@@ -70,29 +70,29 @@ public class AIController {
             Map<String, Object> message = new HashMap<>();
             message.put("role", "user");
             message.put("content", Arrays.asList(imageContent, textContent));
-            System.out.println("Debugging statement2: Image content created.");
+
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "meta-llama/Llama-3.1-8B-Instruct");
+            requestBody.put("model", "pixtral-12b-2409");
             requestBody.put("messages", Collections.singletonList(message));
             requestBody.put("max_tokens", 200);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + hfApiKey);
-            System.out.println("Debugging statement3: Image content created.");
+            headers.set("Authorization", "Bearer " + mistralApiKey);
+
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
 
             Map body = response.getBody();
-            System.out.println("HF RESPONSE: " + body);
-            System.out.println("Debugging statement4: Image content created.");
+            System.out.println("MISTRAL RESPONSE: " + body);
+
             List choices = (List) body.get("choices");
             Map choice = (Map) choices.get(0);
             Map msg = (Map) choice.get("message");
             String aiText = msg.get("content").toString().trim();
-            System.out.println("Debugging statement5: Image content created.");
+
             System.out.println("AI TEXT: " + aiText);
 
             if (!aiText.contains("|")) {
@@ -104,9 +104,9 @@ public class AIController {
             String[] split = aiText.split("\\|", 2);
             result.put("issueType", split[0].trim());
             result.put("description", split[1].trim());
-            System.out.println("Debugging statement6: Image content created.");
+
         } catch (Exception e) {
-            System.out.println("HF ERROR: " + e.getMessage());
+            System.out.println("MISTRAL ERROR: " + e.getMessage());
             result.put("aiError", "AI analysis failed. Please fill manually.");
         }
 
