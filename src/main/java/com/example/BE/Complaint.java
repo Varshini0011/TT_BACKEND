@@ -24,11 +24,11 @@ public class Complaint {
     private String reviewImageUrl;
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String image;
+    @Column(columnDefinition = "TEXT")
+private String image;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String reviewImage;
+@Column(columnDefinition = "TEXT")
+private String reviewImage;
 
     public Complaint() {
         this.createdAt = LocalDateTime.now();
