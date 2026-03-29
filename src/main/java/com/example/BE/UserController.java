@@ -1,6 +1,7 @@
 package com.example.BE;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +19,14 @@ public class UserController {
 
     // ─── REGISTER ──────────────────────────────────────────────────────────────
     @PostMapping("/register")
-    public Users register(@RequestBody Users user) {
+    public ResponseEntity<?> register(@RequestBody Users user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("User with this email already exists!");
+        }
         Users savedUser = userRepository.save(user);
         ActivityLog log = new ActivityLog(savedUser.getEmail(), "REGISTER");
         activityLogRepository.save(log);
-        return savedUser;
+        return ResponseEntity.ok(savedUser);
     }
 
     // ─── LOGIN ─────────────────────────────────────────────────────────────────
@@ -43,7 +47,7 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    // ─── GET All Workers (for Admin assign dropdown) ───────────────────────────
+    // ─── GET All Workers ───────────────────────────────────────────────────────
     @GetMapping("/workers")
     public List<Users> getWorkers() {
         return userRepository.findAll().stream()
